@@ -217,7 +217,7 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				MARKETING_VERSION = 1.0;
+				MARKETING_VERSION = 0.1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = dev.markturnip.substrait.mac;
 				PRODUCT_NAME = Substrait;
 				SDKROOT = macosx;
@@ -239,7 +239,7 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				MARKETING_VERSION = 1.0;
+				MARKETING_VERSION = 0.1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = dev.markturnip.substrait.mac;
 				PRODUCT_NAME = Substrait;
 				SDKROOT = macosx;
