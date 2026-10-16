@@ -1,0 +1,33 @@
+name: SubstraitMac
+options:
+  bundleIdPrefix: dev.markturnip.substrait
+  deploymentTarget:
+    macOS: "15.0"
+targets:
+  SubstraitMac:
+    type: application
+    platform: macOS
+    sources:
+      # Xcode 16 synchronized folder: files added under Sources/ are picked up without regenerating.
+      - path: Sources
+        type: syncedFolder
+      - path: Resources
+        buildPhase: resources
+    info:
+      path: Info.plist
+      properties:
+        CFBundleDisplayName: Substrait
+        NSAudioCaptureUsageDescription: Substrait captures its own playback to stream it to your speaker.
+        NSLocalNetworkUsageDescription: Substrait finds speakers on your network and streams audio to them.
+        LSApplicationCategoryType: public.app-category.music
+    settings:
+      base:
+        PRODUCT_NAME: Substrait
+        PRODUCT_BUNDLE_IDENTIFIER: dev.markturnip.substrait.mac
+        CODE_SIGN_STYLE: Manual
+        CODE_SIGN_IDENTITY: "-"
+        ENABLE_HARDENED_RUNTIME: NO
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        SWIFT_VERSION: "5.0"
+        MARKETING_VERSION: "1.0"
+        CURRENT_PROJECT_VERSION: "1"
