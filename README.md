@@ -9,7 +9,11 @@
   <sub>Not affiliated with Substrait.</sub>
 </p>
 
-> **Sandbox / work in progress.** This repo is a place to experiment. Nothing here is fully tested, APIs used on the Mac include private WebKit calls, and things will break. Not intended for distribution.
+<p align="center">
+  <a href="https://github.com/markst/substrait-sidecar/releases/latest"><img src="https://img.shields.io/github/v/release/markst/substrait-sidecar?label=Download%20for%20macOS&logo=apple&color=4B2928" alt="Download the latest macOS release"></a>
+</p>
+
+> **Sandbox / work in progress.** This repo is a place to experiment. Nothing here is fully tested, APIs used on the Mac include private WebKit calls, and things will break. The macOS download is ad-hoc signed and not notarized, so macOS asks you to approve it once — see the [release notes](https://github.com/markst/substrait-sidecar/releases/latest).
 
 ## Why this exists
 
