@@ -1,8 +1,15 @@
-# Substrait Sidecar
+<p align="center">
+  <img src="docs/images/app-icon.png" alt="Substrait Sidecar app icon" width="128" height="128">
+</p>
+
+<h1 align="center">Substrait Sidecar</h1>
+
+<p align="center">
+  Unofficial companion apps for the <a href="https://substra.it">Substrait</a> web player on <b>macOS</b>, <b>iOS</b> and <b>Android</b>.<br>
+  <sub>Not affiliated with Substrait.</sub>
+</p>
 
 > **Sandbox / work in progress.** This repo is a place to experiment. Nothing here is fully tested, APIs used on the Mac include private WebKit calls, and things will break. Not intended for distribution.
-
-Unofficial companion apps for the [Substrait](https://substra.it) web player on **macOS**, **iOS** and **Android**. Not affiliated with Substrait.
 
 ## Why this exists
 
@@ -14,6 +21,12 @@ On the Mac that works two ways:
 
 - **AirPlay** a single media element via WebKit (low delay; not for YouTube-style MSE streams).
 - **Stream** the app's own audio, captured with a Core Audio process tap, to any DLNA/UPnP speaker (works for every source, ~1.5–2 s delay).
+
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/b63e040a-4c28-4e7d-839d-94252a188623" alt="Substrait Sidecar on macOS: the Substrait web player in its own window, with AirPlay and speaker-streaming buttons in the toolbar" width="800">
+  <br>
+  <sub>The macOS app: Substrait in its own window, with AirPlay and speaker streaming in the toolbar.</sub>
+</p>
 
 ## What's in the repo
 
