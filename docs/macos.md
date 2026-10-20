@@ -13,7 +13,7 @@ A **Back** button (⌘[) on the leading side of the toolbar calls `WKWebView.goB
 | `Streaming/` | `SpeakerStreamer`: coordinates capture → server → speaker |
 | `Streaming/Capture/` | Core Audio process tap of the app's own audio |
 | `Streaming/Server/` | Ring buffer and live WAV HTTP server |
-| `Speakers/` | DLNA/UPnP renderer discovery (SSDP) and AVTransport control |
+| `Speakers/` | DLNA/UPnP renderer discovery (SSDP), AVTransport (play/stop) and RenderingControl (volume) over a shared SOAP helper (`UPnPSOAP`) |
 
 Injected page scripts (`airplay-bridge.js`, `disable-mse.js`) and the app icon live in `apps/macos/Resources/`. `Sources/` is an Xcode 16 synchronized folder (`type: syncedFolder` in `project.yml`), so new files there are built without regenerating the project.
 
@@ -26,6 +26,7 @@ Uses WebKit's built-in AirPlay for a single `<audio>`/`<video>` element (`allows
 - WebKit anchors the picker at the click point but mirrors it vertically within the view. The click is therefore placed near the bottom edge (`WebPlayer.viewportPointBelowPointer`) so the picker hangs under the toolbar button, 40 pt clear of the edges, because a mouse-down in the window's resize margin starts a live resize and swallows the click.
 - `disable-mse.js` hides `window.ManagedMediaSource` at document start. Substrait's Apple Music MSE path sets `disableRemotePlayback` (blocking AirPlay); without `ManagedMediaSource` the site falls back to native HLS, which AirPlay can play.
 - Limitation: sources that stream via Media Source Extensions (e.g. YouTube) or disable remote playback can't use this path.
+- Volume: once a speaker is selected, the system picker shows a volume slider next to it. That slider is the speaker's own volume (verified on a WiiM Mini: moving it to 0 set the speaker's UPnP volume to 0 once playback started), so the app adds no AirPlay volume control of its own.
 
 These findings came from instrumented test harnesses (WebKit unified logs, `CGWindowList` checks for the picker window).
 
@@ -46,8 +47,9 @@ Works for every source, including YouTube, and with DLNA/UPnP media renderers (t
 
 ### Play (`Speakers/`, `Streaming/SpeakerStreamer.swift`)
 
-- SSDP `M-SEARCH` for `AVTransport:1` services over plain BSD sockets (`SSDPDiscovery`; no multicast entitlement needed on macOS), device description parsing for name and control URL (`MediaRendererBrowser`, refreshed every 30 s).
+- SSDP `M-SEARCH` for `AVTransport:1` services over plain BSD sockets (`SSDPDiscovery`; no multicast entitlement needed on macOS), device description parsing for name and the AVTransport and RenderingControl control URLs (`MediaRendererBrowser`, refreshed every 30 s).
 - SOAP `SetAVTransportURI` (DIDL-Lite metadata, `protocolInfo="http-get:*:audio/wav:*"`) + `Play`; `Stop` on stop (`AVTransport`). Stopping stops the renderer first, then un-mutes the Mac.
+- The stream button opens a popover (`App/SpeakerPopover.swift`; a menu can't hold a slider) listing the speakers and, while streaming, a volume slider. The slider is the speaker's own volume via RenderingControl `GetVolume`/`SetVolume` on the `Master` channel, assumed 0–100 (the WiiM's SCPD declares exactly that). It applies immediately, without the stream delay, and doesn't touch the audio data. `SpeakerStreamer` reads the volume when streaming starts and whenever the popover opens (to pick up changes made in the speaker's own app), sends one request at a time with only the latest slider value queued, and re-reads the volume if a request fails. Renderers without RenderingControl get no slider.
 - History: the first version used WiiM's LinkPlay HTTP API (`setPlayerCmd:play:<url>`); it was replaced by standard DLNA/UPnP so other renderers can work, and the WiiM keeps working.
 
 Expect ~1.5–2 s of delay on play/pause/seek. On WiiM, speakers grouped with the target in the WiiM app play along.

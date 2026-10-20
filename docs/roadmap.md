@@ -7,6 +7,7 @@
 - Occasionally the WiiM stays in "loading" after the first Play; stopping and choosing the speaker again starts it.
 - Long sessions: Mac/speaker clock drift isn't compensated beyond capping the delay.
 - No recovery if the default output device changes or WebKit's audio process restarts mid-stream.
+- macOS AirPlay: after picking a speaker in the AirPlay picker (macOS 26), playback moved to the speaker but `webkitCurrentPlaybackTargetIsWireless` never reported it, so the toolbar's AirPlay icon isn't highlighted while AirPlaying. Not investigated yet.
 - iOS AirPlay button not yet confirmed working on a device.
 - Android edge-to-edge (content under the status bar) not implemented.
 - Relies on private WebKit API (`_gpuProcessIdentifier`) and Substrait's current page internals; either can change without notice.
