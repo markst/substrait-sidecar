@@ -15,17 +15,13 @@
 /* Begin PBXFileReference section */
 		5A939F550C42D6F25AF86E16 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		6B39251A6577CFEB912A48A7 /* airplay-bridge.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; path = "airplay-bridge.js"; sourceTree = "<group>"; };
-		8793DDDB7B101A231DDD7602 /* SubstraitMac.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SubstraitMac.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		8793DDDB7B101A231DDD7602 /* SubstraitMac.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; name = SubstraitMac.app; path = Substrait.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		8DBA52BA37A322EBE1B78AC9 /* disable-mse.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; path = "disable-mse.js"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		2771FC8F5BCBE5F8C9D7B33B /* Sources */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			explicitFileTypes = {
-			};
-			explicitFolders = (
-			);
 			path = Sources;
 			sourceTree = "<group>";
 		};
