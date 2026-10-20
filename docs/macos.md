@@ -2,6 +2,8 @@
 
 Native SwiftUI/AppKit app (xcodegen project in `apps/macos/`) hosting Substrait in a `WKWebView`. It has two toolbar buttons for getting audio to a speaker: **AirPlay** (per media element) and **Stream** (capture the app's audio and send it to a network speaker).
 
+A **Back** button (⌘[) on the leading side of the toolbar calls `WKWebView.goBack()` and is enabled while `canGoBack` is true. Substrait changes screens with `history.pushState`, and WebKit records those changes in its back/forward list, so going back works within the single-page app too.
+
 ## Layout (`apps/macos/Sources`)
 
 | Directory | Layer |

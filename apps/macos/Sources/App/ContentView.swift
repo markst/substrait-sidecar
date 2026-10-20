@@ -31,10 +31,20 @@ struct ContentView: View {
                 .ignoresSafeArea(edges: extendsUnderToolbar ? .top : [])
         }
         .background(Color(red: 10 / 255, green: 10 / 255, blue: 10 / 255))
-        .toolbar(removing: .title)
+        // Empty rather than `.toolbar(removing: .title)`: removing the title also drops the
+        // toolbar's flexible space, which pulls the speaker buttons to the leading edge.
+        .navigationTitle("")
         .toolbarBackground(.hidden, for: .windowToolbar)
         .toolbar {
-            ToolbarItem(placement: .primaryAction) {
+            ToolbarItem(placement: .navigation) {
+                Button(action: player.goBack) {
+                    Image(systemName: "chevron.backward")
+                }
+                .disabled(!player.canGoBack)
+                .keyboardShortcut("[", modifiers: .command)
+                .help("Back")
+            }
+            ToolbarItem(placement: .automatic) {
                 Button {
                     player.showAirPlayPicker()
                 } label: {
@@ -44,7 +54,7 @@ struct ContentView: View {
                 .disabled(!player.airPlay.canPick)
                 .help(player.airPlay.helpText)
             }
-            ToolbarItem(placement: .primaryAction) {
+            ToolbarItem(placement: .automatic) {
                 Menu {
                     if case .streaming(let name) = streamer.state {
                         Button("Stop Streaming to \(name)") {

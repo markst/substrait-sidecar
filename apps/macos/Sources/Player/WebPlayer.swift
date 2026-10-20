@@ -9,6 +9,9 @@ private let messageHandlerName = "substraitAirPlay"
 final class WebPlayer: NSObject, ObservableObject, WKNavigationDelegate, WKUIDelegate, WKScriptMessageHandler {
     let webView: WKWebView
     @Published private(set) var airPlay = AirPlayState()
+    /// Mirrors `webView.canGoBack`; Substrait's `history.pushState` screen changes are in the
+    /// back/forward list too.
+    @Published private(set) var canGoBack = false
 
     /// PID of the WebKit GPU process that renders this web view's audio (WebKit SPI), or nil
     /// before any media has played or if the SPI is unavailable.
@@ -23,6 +26,7 @@ final class WebPlayer: NSObject, ObservableObject, WKNavigationDelegate, WKUIDel
     private var activeFrame: WKFrameInfo?
     private var activeFrameId: String?
     private var popups: [WKWebView: NSWindow] = [:]
+    private var canGoBackObservation: NSKeyValueObservation?
 
     override init() {
         let configuration = WKWebViewConfiguration()
@@ -52,7 +56,15 @@ final class WebPlayer: NSObject, ObservableObject, WKNavigationDelegate, WKUIDel
         webView.isInspectable = true
         webView.navigationDelegate = self
         webView.uiDelegate = self
+        canGoBackObservation = webView.observe(\.canGoBack, options: [.initial, .new]) { [weak self] view, _ in
+            let canGoBack = view.canGoBack
+            DispatchQueue.main.async { self?.canGoBack = canGoBack }
+        }
         webView.load(URLRequest(url: startURL))
+    }
+
+    func goBack() {
+        webView.goBack()
     }
 
     private static func bundledScript(_ name: String) -> String {
