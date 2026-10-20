@@ -4,6 +4,7 @@ struct ContentView: View {
     @StateObject private var player = WebPlayer()
     @StateObject private var streamer = SpeakerStreamer()
     @StateObject private var speakers = MediaRendererBrowser()
+    @State private var showsSpeakers = false
 
     /// `obscuredContentInsets` (macOS 26+) is what lets page content start below a transparent
     /// toolbar yet scroll under it; on older systems keep the web view below the toolbar.
@@ -55,26 +56,18 @@ struct ContentView: View {
                 .help(player.airPlay.helpText)
             }
             ToolbarItem(placement: .automatic) {
-                Menu {
-                    if case .streaming(let name) = streamer.state {
-                        Button("Stop Streaming to \(name)") {
-                            Task { await streamer.stop() }
-                        }
-                        Divider()
-                    }
-                    if speakers.renderers.isEmpty {
-                        Text("No network speakers found")
-                    }
-                    ForEach(speakers.renderers) { renderer in
-                        Button("Stream to \(renderer.name)") {
-                            Task { await streamer.start(on: renderer, gpuProcess: player.gpuProcessIdentifier) }
-                        }
-                    }
+                Button {
+                    showsSpeakers.toggle()
                 } label: {
                     Image(systemName: "hifispeaker")
                         .foregroundStyle(streamingIconStyle)
                 }
                 .help(streamer.helpText)
+                .popover(isPresented: $showsSpeakers, arrowEdge: .bottom) {
+                    SpeakerPopover(streamer: streamer, speakers: speakers) { renderer in
+                        Task { await streamer.start(on: renderer, gpuProcess: player.gpuProcessIdentifier) }
+                    }
+                }
             }
         }
         .alert(
