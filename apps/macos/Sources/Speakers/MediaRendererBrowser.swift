@@ -7,6 +7,8 @@ struct MediaRenderer: Identifiable, Hashable {
     let name: String
     let host: String
     let avTransportControlURL: URL
+    /// RenderingControl (volume) endpoint; nil if the renderer doesn't offer one.
+    let renderingControlURL: URL?
 }
 
 /// Keeps a list of media renderers on the local network, refreshed by periodic SSDP searches.
@@ -45,28 +47,37 @@ final class MediaRendererBrowser: ObservableObject {
         renderers = found.values.sorted { $0.name.localizedStandardCompare($1.name) == .orderedAscending }
     }
 
-    /// Fetches a device description and extracts its name and AVTransport control URL.
+    /// Fetches a device description and extracts its name and AVTransport/RenderingControl control URLs.
     private static func describe(_ location: URL) async -> MediaRenderer? {
         var request = URLRequest(url: location)
         request.timeoutInterval = 3
         guard let (data, _) = try? await URLSession.shared.data(for: request),
               let host = location.host else { return nil }
         let parsed = DeviceDescriptionParser(data: data)
+        let base = parsed.urlBase.flatMap(URL.init(string:)) ?? location
+        let resolve = { (path: String?) in path.flatMap { URL(string: $0, relativeTo: base)?.absoluteURL } }
         guard let name = parsed.friendlyName, let udn = parsed.udn,
-              let controlPath = parsed.avTransportControlURL,
-              let controlURL = URL(string: controlPath, relativeTo: parsed.urlBase.flatMap(URL.init(string:)) ?? location)?.absoluteURL
+              let controlURL = resolve(parsed.avTransportControlURL)
         else { return nil }
-        return MediaRenderer(id: udn, name: name, host: host, avTransportControlURL: controlURL)
+        return MediaRenderer(
+            id: udn,
+            name: name,
+            host: host,
+            avTransportControlURL: controlURL,
+            renderingControlURL: resolve(parsed.renderingControlURL)
+        )
     }
 }
 
 /// Minimal UPnP device-description reader: the first device's friendlyName/UDN, the optional
-/// URLBase, and the controlURL of the AVTransport service (top-level or embedded device).
+/// URLBase, and the controlURLs of the AVTransport and RenderingControl services (top-level or
+/// embedded device).
 private final class DeviceDescriptionParser: NSObject, XMLParserDelegate {
     private(set) var friendlyName: String?
     private(set) var udn: String?
     private(set) var urlBase: String?
     private(set) var avTransportControlURL: String?
+    private(set) var renderingControlURL: String?
 
     private var text = ""
     private var serviceType: String?
@@ -102,6 +113,9 @@ private final class DeviceDescriptionParser: NSObject, XMLParserDelegate {
         case "service":
             if avTransportControlURL == nil, serviceType?.contains(":service:AVTransport:") == true {
                 avTransportControlURL = controlURL
+            }
+            if renderingControlURL == nil, serviceType?.contains(":service:RenderingControl:") == true {
+                renderingControlURL = controlURL
             }
         default: break
         }
